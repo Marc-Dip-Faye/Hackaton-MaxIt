@@ -167,8 +167,12 @@ section{margin-top:30px}
 
 /* Rails */
 .rail{display:flex;gap:11px;overflow:hidden;margin:0 -15px;padding:2px 15px 8px}
-.rail-popular{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:11px;margin:0;padding:2px 0 8px}
-.rail-popular .pc{width:100%;min-width:0}
+.rail-popular{display:block;overflow:hidden;margin:0 -15px;padding:2px 15px 8px}
+.rail-track{display:flex;width:max-content;animation:popular-slide-left 42s linear infinite;will-change:transform}
+.rail-group{display:flex;flex:none;gap:11px;padding-right:11px}
+.rail-track .pc{width:214px}
+@keyframes popular-slide-left{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.rail-track{animation:none;transform:none}}
 .rail-resume{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));justify-content:center;width:100%;min-width:0;margin:0;padding:2px 0 8px}
 .rail-resume .pc{width:100%;min-width:0;max-width:213px;justify-self:center}
 .pc{flex:none;width:214px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);
@@ -212,16 +216,6 @@ section{margin-top:30px}
 
 .bo.sm,.bg.sm{height:40px;padding:0 15px;font-size:13.5px;flex:none}
 .bg.sm{padding:0 14px}
-
-/* Catégories */
-.cats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;min-width:0}
-.cat{background:var(--card);border:1px solid var(--line);border-radius:var(--r-s);padding:14px;text-align:left;position:relative;overflow:hidden;}
-
-
-.cat i{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:#fff;margin-bottom:11px}
-.cat b{display:block;font-family:var(--f-dsp);font-size:14px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
-.cat span{font-family:var(--f-mono);font-size:9.5px;color:var(--ink3);letter-spacing:.08em}
-.cat .nb{position:absolute;right:12px;top:12px;font-family:var(--f-dsp);font-size:26px;font-weight:800;color:var(--pill);letter-spacing:-.04em}
 
 /* ═══════════════ CATALOGUE ═══════════════ */
 .srch{position:relative;margin-top:16px}
@@ -601,7 +595,6 @@ section{margin-top:30px}
       </article>
     </section>
 
-    <section class="rv" aria-labelledby="r4"><div class="sh"><div><p class="kick">Explorer</p><h2 id="r4">Thématiques</h2></div><button class="lnk" data-nav="1">Catalogue</button></div><div class="cats" id="cats"></div></section>
   </main>
 
   <!-- ══ CATALOGUE ══ -->
@@ -666,6 +659,7 @@ dl:'<path d="M12 3.4v11.2"/><path d="M7.4 10.6L12 15.2l4.6-4.6"/><path d="M4.6 2
 shield:'<path d="M12 2.8l7.2 3v5.6c0 4.6-3 8.2-7.2 9.8-4.2-1.6-7.2-5.2-7.2-9.8V5.8z"/><path d="M9 12.2l2.2 2.2 4-4.2"/>',
 target:'<circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="4.4"/><circle cx="12" cy="12" r=".9" fill="currentColor"/>',
 gift:'<rect x="3.4" y="8.6" width="17.2" height="4.2" rx="1.2"/><path d="M5 12.8v7.8h14v-7.8"/><path d="M12 8.6v12"/><path d="M12 8.6C10.6 5 7 4.6 6.4 6.6 5.8 8.6 9 8.6 12 8.6zM12 8.6c1.4-3.6 5-4 5.6-2 .6 2-2.6 2-5.6 2z"/>',
+phone:'<rect x="6.5" y="2.8" width="11" height="18.4" rx="2.2"/><path d="M10 6h4M11 18h2"/>',
 arr:'<path d="M4.6 12h14.2"/><path d="M13.4 6.6l5.4 5.4-5.4 5.4"/>',
 medal:'<circle cx="12" cy="14.6" r="5.6"/><path d="M8.6 9.6L6.4 3h11.2l-2.2 6.6"/>',
 qr:'<rect x="3.6" y="3.6" width="7" height="7" rx="1.4"/><rect x="13.4" y="3.6" width="7" height="7" rx="1.4"/><rect x="3.6" y="13.4" width="7" height="7" rx="1.4"/><path d="M13.4 13.4h3v3h-3zM18.4 18.4h2.2v2.2h-2.2z"/>',
@@ -782,6 +776,11 @@ saved:{2:true,6:true},claimed:{},done:{},badgesSeen:{},xp:[],
 going:[{id:9,p:65,m:"Module 2 sur 6 · Construire les pages",last:"hier"},{id:16,p:20,m:"Module 1 sur 3 · Définir le besoin",last:"il y a 3 jours"}],
 finished:[{id:5,d:"12 oct."},{id:6,d:"28 sept."}],
 prefs:{reminder:true,data:true,notif:false}};
+try{
+  const storedPoints=localStorage.getItem("maxitlearn.points");
+  if(storedPoints!==null&&Number.isFinite(Number(storedPoints))&&Number(storedPoints)>=0)S.points=Number(storedPoints);
+}catch{}
+function savePointBalance(){try{localStorage.setItem("maxitlearn.points",String(S.points))}catch{}}
 /* ═══════════ UTILITAIRES ═══════════ */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const pad=n=>String(n).padStart(2,"0");
@@ -818,6 +817,7 @@ function paintLevel(){
 function addPoints(n,why){
   const before=levelOf(S.points).i;
   S.points+=n;S.xp.unshift({v:n,w:why,t:new Date()});S.xp=S.xp.slice(0,14);
+  savePointBalance();
   $("#ptsVal").textContent=S.points;paintLevel();
   if(levelOf(S.points).i>before){toast("Niveau « "+levelOf(S.points).name+" » atteint !","ok");}
   checkBadges();
@@ -867,15 +867,12 @@ function pcCard(c,extra){
 function renderRails(){
   const top=COURSES.slice().sort((a,b)=>b.n-a.n).slice(0,6);
   $("#railPop").classList.add("rail-popular");
-  $("#railPop").innerHTML=top.map(c=>pcCard(c)).join("");
+  const cards=top.map(c=>pcCard(c)).join("");
+  $("#railPop").innerHTML=`<div class="rail-track"><div class="rail-group">${cards}</div><div class="rail-group" aria-hidden="true" inert>${cards}</div></div>`;
   $("#railResume").classList.add("rail-resume");
   $("#railResume").innerHTML=S.going.map(g=>{const c=byId(g.id);
     return pcCard(c,`<div class="mini" style="margin-top:9px"><i style="width:${g.p}%"></i></div><div class="mt" style="margin-top:6px"><span style="color:var(--orange)">${g.p}% fait</span><span>·</span><span>${g.m.split("·")[0].trim()}</span></div>`)||""}).join("")
     ||`<div class="cd" style="padding:16px;width:220px"><p class="sub">Aucun cours en cours.</p></div>`;
-  const keys=Object.keys(CATMETA);
-  $("#cats").innerHTML=keys.map(k=>{const m=CATMETA[k],nb=COURSES.filter(c=>c.cat===k).length;
-    return `<button class="cat" data-cat2="${k}"><span class="nb num">${nb}</span><i style="${grad(m[1])}">${ic(m[0],19)}</i><b>${k}</b><span>${nb} cours</span></button>`}).join("");
-
 }
 const dn=["DIMANCHE","LUNDI","MARDI","MERCREDI","JEUDI","VENDREDI","SAMEDI"],mn=["JANVIER","FÉVRIER","MARS","AVRIL","MAI","JUIN","JUILLET","AOÛT","SEPTEMBRE","OCTOBRE","NOVEMBRE","DÉCEMBRE"];
 const now=new Date();$("#dateKick").textContent=dn[now.getDay()]+" "+now.getDate()+" "+mn[now.getMonth()]+" · DAKAR";
@@ -924,8 +921,6 @@ document.addEventListener("click",e=>{
     s.setAttribute("aria-pressed",S.saved[id]);
     toast(S.saved[id]?"Ajouté à vos favoris":"Retiré des favoris",S.saved[id]?"ok":"");
     renderList();if(S.view===2)renderMy();if(S.view===4)renderProf();return}
-  const c2=e.target.closest("[data-cat2]");
-  if(c2){S.cat=c2.dataset.cat2;renderChips();go(1);renderList();return}
 });
 
 /* ═══════════ MES COURS ═══════════ */
@@ -1307,6 +1302,7 @@ function syncDaily(){
 /* ═══════════ PORTAFEUILLE / BADGE / CERTIFICAT ═══════════ */
 function openWallet(){
   const L=levelOf(S.points);
+  const rewards=[["500 Mo d’internet",150,"gift"],["1 Go d’internet",260,"gift"],["100 F de crédit",200,"phone"],["200 F de crédit",380,"phone"]];
   sheet.innerHTML=shHead("Portefeuille")+`
   <div class="cd" style="padding:18px;text-align:center;background:linear-gradient(150deg,rgba(255,122,26,.16),var(--card))">
     <p class="kick no" style="justify-content:center">Solde</p>
@@ -1314,23 +1310,50 @@ function openWallet(){
     <p class="sub">points · niveau ${L.i+1} « ${L.name} »</p>
     <div class="pr" style="margin-top:12px"><i style="width:${L.next?Math.round((S.points-L.min)/(L.next[0]-L.min)*100):100}%"></i></div>
     <p class="sub num" style="margin-top:7px">${L.next?L.next[0]-S.points+" pts avant "+L.next[1]:"Palier maximal"}</p></div>
-  <div class="facts" style="margin-top:14px"><div><b class="num">${S.xp.length}</b><span>Activités</span></div><div><b class="num">3</b><span>Bonnes fins</span></div><div><b class="free">0 Mo</b><span>Coût</span></div></div>
+  <div class="facts" style="margin-top:14px"><div><b class="num">${S.xp.length}</b><span>Activités</span></div><div><b class="num">4</b><span>Récompenses</span></div><div><b class="free">2</b><span>Types d’avantage</span></div></div>
   <p class="kick" style="margin:18px 0 4px">Historique récent</p>
   <div>${S.xp.length?S.xp.map(x=>`<div class="xp"><span class="xi">${ic("bolt",15)}</span>
     <span class="xn">${esc(x.w)}<small>${pad(x.t.getHours())}:${pad(x.t.getMinutes())} · aujourd'hui</small></span>
     <span class="xv num">+${x.v}</span></div>`).join(""):`<p class="sub" style="padding:14px 0">Terminez une leçon ou un quiz pour créditer vos premiers points.</p>`}</div>
-  <p class="kick" style="margin:18px 0 8px">Utiliser mes points</p>
+  <p class="kick" style="margin:18px 0 4px">Échanger contre du crédit ou de la data</p>
+  <p class="sub" style="margin-bottom:9px">Exemples de barème pour la maquette, à valider avec Orange.</p>
   <div class="list">
-  ${[["Mois de data 500 Mo",150,"gift"],["Coaching individuel 30 min",400,"chat"],["Poster mon certificat sur LinkedIn",0,"medal"]].map(r=>
+  ${rewards.map(r=>
     `<div class="my" style="display:flex;gap:12px;align-items:center"><span class="xi" style="width:38px;height:38px;border-radius:12px;background:var(--pill);border:1px solid var(--line);display:grid;place-items:center;color:var(--orange);flex:none">${ic(r[2],17)}</span>
-    <span class="cb"><b style="font-size:13.5px">${r[0]}</b><p class="sub num">${r[1]?r[1]+" pts":"Gratuit"}</p></span>
-    <button class="${S.points>=r[1]?"bo":"bg"} sm" data-ex="${r[1]}">${S.points>=r[1]?"Échanger":"Verrouillé"}</button></div>`).join("")}</div>`;
+    <span class="cb"><b style="font-size:13.5px">${r[0]}</b><p class="sub num">${r[1]} pts</p></span>
+    <button class="${S.points>=r[1]?"bo":"bg"} sm" data-ex="${r[1]}" data-reward="${r[0]}" ${S.points<r[1]?"disabled":""}>${S.points>=r[1]?"Échanger":"Verrouillé"}</button></div>`).join("")}</div>
+  <p class="sub" style="margin-top:12px;font-size:11px">Simulation uniquement : aucun crédit ni pass réel n’est envoyé à votre ligne.</p>`;
   openSheet();
   sheet.querySelectorAll("[data-ex]").forEach(b=>b.onclick=e=>{
-    const cost=+b.dataset.ex;if(!cost){toast("Certificat partagé ✓","ok");return}
+    const cost=+b.dataset.ex;
     if(S.points<cost){toast("Points insuffisants","bad");return}
-    S.points-=cost;$("#ptsVal").textContent=S.points;paintLevel();
-    toast("Récompense échangée : −"+cost+" pts","ok");openWallet();
+    openRedeem(b.dataset.reward,cost);
+  });
+}
+$("#wallet").addEventListener("click",openWallet);
+function openRedeem(reward,cost){
+  sheet.innerHTML=shHead("Confirmer l’échange")+
+    '<div class="cd" style="padding:16px;margin-top:6px"><p class="kick no">Récompense choisie</p>'+
+    '<h3 style="font-family:var(--f-dsp);font-size:21px;margin-top:6px">'+esc(reward)+'</h3>'+
+    '<p class="sub num" style="margin-top:5px">Coût : '+cost+' points · Solde après échange : '+(S.points-cost)+' points</p></div>'+
+    '<label for="redeemNumber" style="display:block;margin-top:16px;font-weight:600">Numéro Orange bénéficiaire</label>'+
+    '<input class="field" id="redeemNumber" type="tel" inputmode="tel" autocomplete="tel" placeholder="+221 77 000 00 00" aria-describedby="redeemHelp">'+
+    '<p class="sub" id="redeemHelp" style="margin-top:6px">Saisissez un numéro sénégalais à 9 chiffres.</p>'+
+    '<button class="bo full" id="confirmRedeem" style="width:100%;margin-top:14px" disabled>Confirmer · '+cost+' pts</button>'+
+    '<button class="bg full" id="cancelRedeem" style="width:100%;margin-top:8px">Annuler</button>'+
+    '<p class="sub" style="margin-top:12px;font-size:11px">Démo uniquement : aucune demande n’est envoyée à Orange.</p>';
+  const input=$("#redeemNumber"),confirm=$("#confirmRedeem");
+  input.addEventListener("input",()=>{
+    const digits=input.value.replace(/\D/g,"").replace(/^221/,"");
+    confirm.disabled=!/^7\d{8}$/.test(digits);
+  });
+  $("#cancelRedeem").addEventListener("click",openWallet);
+  confirm.addEventListener("click",()=>{
+    const digits=input.value.replace(/\D/g,"").replace(/^221/,"");
+    if(!/^7\d{8}$/.test(digits)){toast("Saisissez un numéro sénégalais valide","warn");return}
+    if(S.points<cost){toast("Points insuffisants","bad");openWallet();return}
+    S.points-=cost;savePointBalance();$("#ptsVal").textContent=S.points;paintLevel();
+    toast("Simulation : "+reward+" échangé contre "+cost+" pts","ok");openWallet();
   });
 }
 function openBadge(k){
