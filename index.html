@@ -1105,17 +1105,13 @@ function openCourse(id){
   <div class="cm" style="margin-top:13px"><span class="pill o">${c.lvl}</span><span class="pill num">${c.mods} modules</span><span class="pill num">${c.dur}</span><span class="pill" style="color:var(--orange)">${icf("star",11)} ${dec(c.rate)} (${fmtN(c.n)})</span></div>
   <h3 class="ct">${esc(c.t)}</h3><p class="cdesc">${esc(c.d)}</p>
   ${st!=="new"?`<div class="pr"><i style="width:${st==="done"?100:p}%"></i></div><p class="sub num" style="margin-top:7px">${st==="done"?"Cours terminé":"Progression : "+p+" %"}</p>`:""}
-  <div class="facts" style="margin-top:15px"><div><b class="num">${c.dur}</b><span>Durée</span></div><div><b class="num">${c.mods*3}</b><span>Leçons</span></div><div><b class="free">0 Mo</b><span>Data</span></div></div>
+  <div class="facts" style="margin-top:15px"><div><b class="num">${c.dur}</b><span>Durée</span></div><div><b class="num">${c.mods*3}</b><span>Leçons</span></div><div><b class="free">${c.mods}</b><span>Modules</span></div></div>
   <div class="acts"><button class="bg" data-fav="${c.id}">${on?"Retirer":"Favori"}</button><button class="bo" data-${st==="going"?"play":"start"}="${c.id}">${lbl}</button></div>
   <div class="tabs2" role="tablist">
     <button role="tab" aria-selected="${dTab==="go"}" data-dtab="go">Programme</button>
     <button role="tab" aria-selected="${dTab==="ou"}" data-dtab="ou">Compétences</button>
     <button role="tab" aria-selected="${dTab==="rv"}" data-dtab="rv">Avis</button></div>
-  <div id="dBody"></div>
-  <div class="offl"><span style="color:var(--ok)">${ic("dl",20)}</span>
-    <div style="flex:1"><b style="font-size:13.5px">Télécharger pour le hors-ligne</b><p class="sub" id="offTxt">Étudiez sans consommer de data</p>
-    <div class="ob" id="offBar" style="margin-top:8px"><i></i></div></div>
-    <button class="bg sm" data-offload>Obtenir</button></div>`;
+  <div id="dBody"></div>`;
   paintDTab(c);openSheet();
 }
 function paintDTab(c){
@@ -1157,8 +1153,6 @@ document.addEventListener("click",e=>{
   const f=e.target.closest("[data-fav]");
   if(f){const id=f.dataset.fav;S.saved[id]=!S.saved[id];toast(S.saved[id]?"Ajouté à vos favoris":"Retiré des favoris",S.saved[id]?"ok":"");
     renderList();if(S.view===2)renderMy();if(S.view===4)renderProf();openCourse(+id);return}
-  const o=e.target.closest("[data-offload]");
-  if(o){o.disabled=true;const bar=$("#offBar i"),txt=$("#offTxt");bar.style.width="100%";txt.textContent="Disponible hors-ligne · 8,4 Mo";o.textContent="✓ Obtenu";o.style.color="var(--ok)";toast("Cours disponible hors-ligne","ok");return}
   const st=e.target.closest("[data-start]");if(st&&!e.target.closest("#sheet")){startCourse(+st.dataset.start);return}
   const op=e.target.closest("[data-open]");if(op){S.lastCourse=+op.dataset.open;openCourse(+op.dataset.open);return}
   const nv=e.target.closest("[data-nav]");if(nv){go(+nv.dataset.nav);return}
